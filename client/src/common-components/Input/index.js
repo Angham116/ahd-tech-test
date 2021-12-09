@@ -6,7 +6,7 @@ export default function InputField({
   placeholder,
   type,
   onChange,
-  suffix,
+  prefix,
   name,
 }) {
   return (
@@ -26,6 +26,7 @@ export default function InputField({
       onChange={onChange}
       className="input input-field"
       name={name}
+      prefix={prefix}
   />
   )
 }
