@@ -1,0 +1,29 @@
+.filters {
+  min-height: 100px;
+  vertical-align: middle;
+}
+
+.filters,
+.header-filters-search .ant-input,
+.header-filters-search .primary-button {
+  display: inline-block;
+}
+
+.filters,
+.header-filters-search.filters .input.input-field {
+  width: 50%;
+}
+
+.projects-table-title,
+.projects-table-btn {
+  display: inline-block;
+  width: 50%;
+}
+
+.projects-table-title {
+  text-align: left;
+}
+
+.projects-table-btn {
+  text-align: right;
+}
