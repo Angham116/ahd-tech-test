@@ -7,6 +7,7 @@ export default function InputField({
   type,
   onChange,
   suffix,
+  name,
 }) {
   return (
     type === "password"
@@ -16,6 +17,7 @@ export default function InputField({
       iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
       onChange={onChange}
       className="input input-field"
+      name={name}
     />
     :
     <Input
@@ -23,6 +25,7 @@ export default function InputField({
       type={type}
       onChange={onChange}
       className="input input-field"
+      name={name}
   />
   )
 }
