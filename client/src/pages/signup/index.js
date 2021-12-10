@@ -54,10 +54,11 @@ function Signup({
       req.oneLowerCaseChar = /[a-z]+/.test(value);
       req.oneupperCaseChar = /[A-Z]+/.test(value);
       req.oneNumber = /[0-9]+/.test(value);
+      req.oneSpecialChar = /[!@#$%^&*]+/.test(value);
 
       setPasswordRequirements(req);
 
-      if (req.oneupperCaseChar && req.oneLowerCaseChar && req.oneNumber && req.eightCharMin) {
+      if (req.oneupperCaseChar && req.oneLowerCaseChar && req.oneNumber && req.eightCharMin && req.oneSpecialChar) {
         setUserInfo({
           ...userInfo,
           [name]: value,
