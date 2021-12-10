@@ -19,6 +19,13 @@ function Signup({
   const [form] = Form.useForm();
   const [, forceUpdate] = useState({});
   const [errorMsg, setErrorMsg] = useState('');
+  const [passwordRequirements, setPasswordRequirements] = useState({
+    oneLowerCaseChar: false,
+    oneupperCaseChar: false,
+    oneSpecialChar: false,
+    eightCharMin: false,
+    oneNumber: false,
+  })
 
   // To disable submit button at the beginning.
   useEffect(() => {
@@ -29,20 +36,39 @@ function Signup({
     setErrorMsg('');
     form.isFieldsTouched(false);
     if (name === 'password') {
-      const pwd = /^[a-zA-Z0-9!@#$%^&*]{6,16}$/;
-      if (!pwd.test(value) || value.length < 8) {
-        setIsStrongPassword(false);
+
+      let req = {
+        oneLowerCaseChar: false,
+        oneupperCaseChar: false,
+        oneSpecialChar: false,
+        eightCharMin: false,
+        oneNumber: false,
+      };
+
+      if (value.length < 8) {
+        req.eightCharMin = false;
       } else {
-        setIsStrongPassword(true);
+        req.eightCharMin = true;
       }
+  
+      req.oneLowerCaseChar = /[a-z]+/.test(value);
+      req.oneupperCaseChar = /[A-Z]+/.test(value);
+      req.oneNumber = /[0-9]+/.test(value);
+      setPasswordRequirements(req);
+      setUserInfo({
+        ...userInfo,
+        [name]: value,
+      })
+    } else {
+      setUserInfo({
+        ...userInfo,
+        [name]: value,
+      })
     }
-    setUserInfo({
-      ...userInfo,
-      [name]: value,
-    })
   }
 
   const onFinish = async () => {
+    console.log('pp', passwordRequirements)
     const {
       success,
       msg,
