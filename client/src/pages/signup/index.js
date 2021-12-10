@@ -54,21 +54,25 @@ function Signup({
       req.oneLowerCaseChar = /[a-z]+/.test(value);
       req.oneupperCaseChar = /[A-Z]+/.test(value);
       req.oneNumber = /[0-9]+/.test(value);
+
       setPasswordRequirements(req);
-      setUserInfo({
-        ...userInfo,
-        [name]: value,
-      })
+
+      if (req.oneupperCaseChar && req.oneLowerCaseChar && req.oneNumber && req.eightCharMin) {
+        setUserInfo({
+          ...userInfo,
+          [name]: value,
+        });
+      }
+
     } else {
       setUserInfo({
         ...userInfo,
         [name]: value,
-      })
+      });
     }
   }
 
   const onFinish = async () => {
-    console.log('pp', passwordRequirements)
     const {
       success,
       msg,
