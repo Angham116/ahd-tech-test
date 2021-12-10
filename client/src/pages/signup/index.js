@@ -173,23 +173,23 @@ function Signup({
             ?
             <div>
               <div className="pass-hint-box">
-                <span className="pass-hint">
+                <span className={`pass-hint ${passwordRequirements.oneLowerCaseChar ? 'green-text' : 'red-text'}`}>
                   One lowercase character
                 </span>
-                <span className="pass-hint">
+                <span className={`pass-hint ${passwordRequirements.oneSpecialChar ? 'green-text' : 'red-text'}`}>
                   One special character
                 </span>
               </div>
               <div className="pass-hint-box">
-                <span className="pass-hint">
+                <span className={`pass-hint ${passwordRequirements.oneupperCaseChar ? 'green-text' : 'red-text'}`}>
                   One uppercase character
                 </span>
-                <span className="pass-hint">
+                <span className={`pass-hint ${passwordRequirements.eightCharMin ? 'green-text' : 'red-text'}`}>
                   8 characteres minimum
                 </span>
               </div>
               <div className="pass-hint-box">
-                <span className="pass-hint">
+                <span className={`pass-hint ${passwordRequirements.oneNumber ? 'green-text' : 'red-text'}`}>
                   One number
                 </span>
               </div>

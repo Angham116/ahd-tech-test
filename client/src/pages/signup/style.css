@@ -33,6 +33,11 @@
   color: green;
 }
 
-.err-msg {
+.err-msg,
+.red-text {
   color: red;
+}
+
+.green-text {
+  color: green;
 }
