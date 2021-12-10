@@ -1,106 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Form, Input, InputNumber, Typography, Popconfirm } from 'antd';
-import { SearchOutlined } from '@ant-design/icons'
+import { Table, Form, Typography, Popconfirm, Button, Popover, Row, Col } from 'antd';
+import { SearchOutlined, EllipsisOutlined } from '@ant-design/icons'
 
 import { Search, PrimaryButton } from '../../common-components';
+
+import {
+  sortedProjects,
+  allProjects,
+  myProjects,
+} from '../../constants';
+
 import './style.css';
 
-const savedProjects = ['0x004322', '0x004323'];
-const acquiredProjects = ['0x004321'];
-const myProjects = ['0x004324'];
-
-const allProjects = [
-   {
-    id: '0x004321',
-    name: 'information system',
-    status: 'in review',
-    resources: 10,
-    price: 550,
-    provider: '',
-    complicity: 0,
-    startDate: new Date(),
-    deadline: new Date(),
-    offers: 0,
-   },
-   {
-    id: '0x004322',
-    name: 'accounting system',
-    status: 'in review',
-    resources: 37,
-    price: 300,
-    provider: '',
-    complicity: 30,
-    startDate: new Date(),
-    deadline: new Date(),
-    offers: 75,
-   },
-   {
-    id: '0x004323',
-    name: 'banking software',
-    status: 'in progress',
-    resources: 8,
-    price: 220,
-    provider: '',
-    complicity: 100,
-    startDate: new Date(),
-    deadline: new Date(),
-    offers: 88,
-   },
-   {
-    id: '0x004324',
-    name: 'automation factory',
-    status: 'design',
-    resources: 15,
-    price: 190,
-    provider: '',
-    complicity: 0,
-    startDate: new Date(),
-    deadline: new Date(),
-    offers: 20,
-   },
-];
-
-const sortedProjects = {
-  saved: savedProjects,
-  acquired: acquiredProjects,
-  my: myProjects,
-};
-
-
-const EditableCell = ({
-  editing,
-  dataIndex,
-  title,
-  inputType,
-  record,
-  index,
-  children,
-  ...restProps
-}) => {
-  const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
-  return (
-    <td {...restProps}>
-      {editing ? (
-        <Form.Item
-          name={dataIndex}
-          style={{
-            margin: 0,
-          }}
-          rules={[
-            {
-              required: true,
-              message: `Please Input ${title}!`,
-            },
-          ]}
-        >
-          {inputNode}
-        </Form.Item>
-      ) : (
-        children
-      )}
-    </td>
-  );
-};
+import EditableCell from '../../common-components/table/editable-cell';
 
 export default function Projects() {
 
@@ -112,17 +24,19 @@ export default function Projects() {
   const [columns, setColumns] = useState([]);
   const [editingKey, setEditingKey] = useState('');
 
-  const isEditing = (record) => record.id === editingKey;
+  const isEditing = (record) => record.id === editingKey && myProjects.includes(editingKey);
 
   useEffect(() => {
     setProjects(allProjects);
     setFilteredProjects(allProjects);
+  }, [])
+
+  useEffect(() => {
     if (allProjects.length) {
       const keys = Object.keys(allProjects[0]);
-      setRecordFields(keys);
       let cols = [];
       keys.map((key) => {
-        cols.push({
+        return cols.push({
           title: key,
           dataIndex: key,
           width: '25%',
@@ -130,40 +44,58 @@ export default function Projects() {
         });
       });
       cols.push({
-        title: '',
         dataIndex: 'actions',
         title: 'operation',
         render: (_, record) => {
           const editable = isEditing(record);
           return editable ? (
-            <span>
+            <span key={record.id}>
               <Typography.Link
                 // onClick={() => save(record.key)}
                 style={{
                   marginRight: 8,
                 }}
-              >
+                >
                 Save
               </Typography.Link>
               <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-                <a>Cancel</a>
+                <p>Cancel</p>
               </Popconfirm>
             </span>
           ) : (
-            <>
-            <Typography.Link disabled={editingKey !== ''} onClick={() => handleEdit(record)}>
-              Edit
-            </Typography.Link>
-            <Typography.Link disabled={editingKey !== ''} onClick={() => handleDeleteProject(record)}>
-              Delete
-            </Typography.Link>
-            </>
+            <React.Fragment key={record.id}>
+              {myProjects.length && myProjects.includes(record.id) &&
+                <Popover placement="bottomRight" content={
+                <>
+                  <p disabled={editingKey !== ''} onClick={() => handleEdit(record)}>
+                    Edit
+                  </p>
+                  <p disabled={editingKey !== ''} onClick={() => handleDeleteProject(record)}>
+                    Delete
+                  </p>
+                  <p onClick={() => {
+                    setEditingKey('');
+                  }}>
+                    Cancel
+                  </p>
+                </>
+              } trigger="hover">
+                <Button
+                  disabled={!(myProjects.length && myProjects.includes(record.id))}
+                  >
+                  <EllipsisOutlined />
+                </Button>
+              </Popover>
+               }
+            </React.Fragment>
           );
         },
       })
       setColumns(cols);
+      setRecordFields(keys);
     }
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [false])
 
   const mergedColumns = columns.map((col) => {
     if (!col.editable) {
@@ -174,7 +106,6 @@ export default function Projects() {
       ...col,
       onCell: (record) => ({
         record,
-        inputType: col.dataIndex === 'age' ? 'number' : 'text',
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
@@ -184,12 +115,12 @@ export default function Projects() {
 
 
   const onSearchByProjectName = () => {
-    // search by project name
-    console.log('searchProjectName', searchProjectName)
+    const res = allProjects.filter(item => item.name.includes(searchProjectName));
+    setFilteredProjects(res);
   }
 
   const onSearchByProjectStatus = (status) => {
-    // search by project status
+    // search by project status (My, Acquired, Saved)
     const projectsByStatus = sortedProjects[status];
     const res = allProjects.filter(item => projectsByStatus.includes(item.id));
     setFilteredProjects(res);
@@ -209,7 +140,6 @@ export default function Projects() {
 
   const handleDeleteProject = (record) => {
     setFilteredProjects(prevProjects => {
-      console.log('prevProjects', prevProjects, record)
       return prevProjects.filter(project => project.id !== record.id);
     });
   }
@@ -219,44 +149,85 @@ export default function Projects() {
   };
  
   return (
-    <div className="container">
-      <div className="header-filters">
-        <div className="header-filters-search filters">
+    <div className="projects-container">
+      <Row className="header-filters">
+        <Col lg={12} md={12} s={23} xs={23} className="header-filters-search filters">
           <Search
             prefix={<SearchOutlined />}
             btnText="Search"
             onSearch={onSearchByProjectName}
-            handleSearchChange={({ target: { value }}) => setSearchProjectName(value)}
+            handleSearchChange={({ target: { value }}) => {
+              if (value) {
+                setSearchProjectName(value);
+                onSearchByProjectName();
+              } else {
+                setFilteredProjects(allProjects);
+              }
+            }}
           />
-        </div>
+        </Col>
 
-        <div className="header-filters-btns filters">
-          <PrimaryButton btnText="All" key="all" onClick={() => setFilteredProjects(projects)}/>
-          <PrimaryButton btnText="My" key="my" onClick={() => onSearchByProjectStatus('my')}/>
-          <PrimaryButton btnText="Acquired" key="acquired" onClick={() => onSearchByProjectStatus('acquired')}/>
-          <PrimaryButton btnText="Saved" key="saved" onClick={() => onSearchByProjectStatus('saved')}/>
-        </div>
+        <Col lg={12} md={12} s={23} xs={23} className="header-filters-btns filters">
+          <Row>
+            <Col>
+              <PrimaryButton
+                className="secondary-btn"
+                btnText="All"
+                key="all"
+                onClick={() => setFilteredProjects(projects)}
+              />
+            </Col>
+            <Col>
+              <PrimaryButton
+                className="secondary-btn"
+                btnText="My"
+                key="my"
+                onClick={() => onSearchByProjectStatus('my')}
+                circleColor="red"
+              />
+            </Col>
+            <Col>
+              <PrimaryButton
+                className="secondary-btn"
+                btnText="Acquired"
+                key="acquired"
+                onClick={() => onSearchByProjectStatus('acquired')}
+                circleColor="blue"
+              />
+            </Col>
+            <Col>
+              <PrimaryButton
+                className="secondary-btn"
+                btnText="Saved"
+                key="saved"
+                onClick={() => onSearchByProjectStatus('saved')}
+                circleColor="gray"
+              />
+            </Col>
+          </Row>
+        </Col>
 
-      </div>
+      </Row>
 
       {/* Projects Table */}
 
       <div>
-        <div>
-          <div className="projects-table-title">
-            <span>Projects</span>
-          </div>
-          <div className="projects-table-btn">
-            <PrimaryButton btnText="create project" />
-          </div>
-        </div>
+        <Row className="projects-sub-header">
+          <Col span={12} className="projects-table-title">
+            <h3>Projects</h3>
+          </Col>
+          <Col span={12} className="projects-table-btn">
+            <PrimaryButton btnText="create project" className="primary-btn" />
+          </Col>
+        </Row>
 
         {
-          filteredProjects.length
+          filteredProjects.length && columns.length && recordFields.length
           ?
             <div>
               <Form form={form} component={false}>
                 <Table
+                  className="projects-table"
                   components={{
                     body: {
                       cell: EditableCell,

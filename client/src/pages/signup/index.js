@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Form, DatePicker, Checkbox, Button } from 'antd';
-import { InputField } from '../../common-components';
+import { withRouter } from 'react-router-dom';
+import { Form, DatePicker, Checkbox } from 'antd';
+import { InputField, PrimaryButton } from '../../common-components';
+
+import { signupApi } from '../../api';
 
 import './style.css';
 
 const { Item } = Form;
 
-export default function Signup() {
+function Signup({
+  history,
+}) {
   
   const [userInfo, setUserInfo] = useState({});
   const [isStrongPassword, setIsStrongPassword] = useState(false);
   const [checkedTerms, setCheckedTerms] = useState(false);
   const [form] = Form.useForm();
-
   const [, forceUpdate] = useState({});
+  const [errorMsg, setErrorMsg] = useState('');
 
   // To disable submit button at the beginning.
   useEffect(() => {
@@ -21,6 +26,8 @@ export default function Signup() {
   }, []);
 
   const onChange = ({ target: { value, name } }) => {
+    setErrorMsg('');
+    form.isFieldsTouched(false);
     if (name === 'password') {
       const pwd = /^[a-zA-Z0-9!@#$%^&*]{6,16}$/;
       if (!pwd.test(value) || value.length < 8) {
@@ -35,7 +42,17 @@ export default function Signup() {
     })
   }
 
-  const onFinish = () => console.log('user info', userInfo)
+  const onFinish = async () => {
+    const {
+      success,
+      msg,
+    } = await signupApi({ userInfo });
+    if (success) {
+      history.push('/');
+    } else {
+      setErrorMsg(msg);
+    }
+  }
 
   return (
     <div className="container">
@@ -45,6 +62,9 @@ export default function Signup() {
         form={form}
         autoComplete={false}
       >
+        <p className="err-msg">
+          {errorMsg ? errorMsg : ''}
+        </p>
         <div className="names-items">
           <Item
             label="First Name"
@@ -52,6 +72,7 @@ export default function Signup() {
             rules={[
               {
                 required: true,
+                message: 'Please input your first name!',
               }
             ]}
             className="name-item"
@@ -64,6 +85,7 @@ export default function Signup() {
             rules={[
               {
                 required: true,
+                message: 'Please input your last name!',
               }
             ]}
             className="name-item"
@@ -89,7 +111,8 @@ export default function Signup() {
           rules={[
             {
               required: true,
-              type: "email"
+              type: "email",
+              message: 'Please input a valid email!',
             },
             ({ getFieldValue }) => ({
               validator(_, value) {
@@ -173,6 +196,7 @@ export default function Signup() {
           rules={[
             {
               required: true,
+              message: 'Please input your date of birth!',
             }
           ]}
         >
@@ -186,7 +210,8 @@ export default function Signup() {
           <Checkbox onChange={({ target: { checked }}) => setCheckedTerms(checked)}>I agree to the <a href="/">Terms and Policy</a></Checkbox>
         </Item>
         <Item shouldUpdate>
-          {() => <Button
+          {() =>
+          <PrimaryButton
             type="primary"
             htmlType="submit"
             className="submit-btn"
@@ -195,11 +220,20 @@ export default function Signup() {
               !!form.getFieldsError().filter(({ errors }) => errors.length).length ||
               !checkedTerms
             }
-          >
-            Submit
-          </Button>}
+            btnText="Sign Up"
+          />}
         </Item>
       </Form>
+      <p>
+        Already have an account ? 
+        <PrimaryButton
+          className="link-btn"
+          onClick={ () => history.push('/login')}
+          btnText="Sign in"
+        />
+      </p>
     </div>
   )
 }
+
+export default withRouter(Signup);

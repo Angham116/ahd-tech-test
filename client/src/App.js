@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import * as Pages from './pages';
 import * as PagesRoutes from './routes';
@@ -12,12 +12,21 @@ class App extends Component {
     return (
       <div className="App">
         <Router>
-          <Routes>
-            <Route exact path={PagesRoutes.signup} element={<Pages.Signup />} />
-            <Route exact path={PagesRoutes.login} element={<Pages.Login />} />
-            <Route exact path={PagesRoutes.projects} element={<Pages.Projects />} />
-            <Route path='*' element={<Pages.NotFound />} />
-          </Routes>
+          <Switch>
+            <Route exact path={PagesRoutes.signup}>
+            <Pages.Signup />
+            </Route>
+            <Route exact path={PagesRoutes.login}>
+              <Pages.Login />
+            </Route>
+
+            <Route exact path={PagesRoutes.projects}>
+              <Pages.Projects />
+            </Route>
+            <Route path='*'>
+              <Pages.NotFound />
+            </Route>
+          </Switch>
         </Router>
       </div>
     );

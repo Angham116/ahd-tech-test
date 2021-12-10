@@ -44,3 +44,10 @@
     transform: rotate(360deg);
   }
 }
+
+@media screen and (max-width: 600px) {
+  .container {
+    width: 90%;
+  }
+}
+
