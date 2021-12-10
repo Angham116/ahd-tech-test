@@ -1,7 +1,7 @@
 const { compare } = require('bcrypt');
 
 let users = require('../../constants/users');
-const { hashPassword, generateJwt } = require('../../utils');
+const { generateJwt } = require('../../utils');
 
 module.exports = async (req, res, next) => {
   try {
@@ -18,9 +18,7 @@ module.exports = async (req, res, next) => {
       return next({ code: 404, msg: 'User doesnt exist'});
     }
 
-    const hashedPassword = await hashPassword(password);
-
-    const passIsMatch = await compare(password, hashedPassword);
+    const passIsMatch = await compare(password, isExistUser.password);
 
     if (!passIsMatch) {
       return next({
