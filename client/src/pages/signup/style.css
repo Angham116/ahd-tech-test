@@ -1,0 +1,43 @@
+.names-items {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.name-item {
+  display: inline-block;
+  width: 48%;
+}
+
+.name-item,
+.terms-policy-item,
+.pass-hint-box,
+.strong-pass-hint,
+.birthday-picker-item .ant-form-item-control {
+  text-align: left;
+}
+
+.submit-btn.ant-btn {
+  padding: 0px 10em;
+  height: 40px;
+}
+
+.pass-hint {
+  display: inline-block;
+  width: 50%;
+  color: #8c8c8c;
+}
+
+.strong-pass-hint {
+  display: block;
+  width: 100%;
+  color: green;
+}
+
+.err-msg,
+.red-text {
+  color: red;
+}
+
+.green-text {
+  color: green;
+}
